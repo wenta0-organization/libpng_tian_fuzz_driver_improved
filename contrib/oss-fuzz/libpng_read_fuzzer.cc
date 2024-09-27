@@ -245,7 +245,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
   }
 
-  image.format = PNG_FORMAT_ABGR;
+  image.format = PNG_FORMAT_BGR;
   buffer.resize(PNG_IMAGE_SIZE(image));
   png_image_finish_read(&image, NULL, buffer.data(), 0, NULL);
   
@@ -276,6 +276,20 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
 
   image.format = PNG_FORMAT_LINEAR_RGB_ALPHA;
+  buffer.resize(PNG_IMAGE_SIZE(image));
+  png_image_finish_read(&image, NULL, buffer.data(), 0, NULL);
+  
+  png_image_free(&image);
+
+//png_image image;
+  memset(&image, 0, (sizeof image));
+  image.version = PNG_IMAGE_VERSION;
+
+  if (!png_image_begin_read_from_memory(&image, data, size)) {
+    return 0;
+  }
+
+  image.format = PNG_FORMAT_LINEAR_Y;
   buffer.resize(PNG_IMAGE_SIZE(image));
   png_image_finish_read(&image, NULL, buffer.data(), 0, NULL);
   
