@@ -37,20 +37,15 @@ make -j$(nproc) clean
 make -j$(nproc) libpng16.la
 
 # add seed corpus for all fuzz drivers 
-find $SRC/libpng -name "*.png" | grep -v crashers | \
-     xargs zip $OUT/libpng_read_fuzzer_seed_corpus.zip
+zip -j $OUT/libpng_read_fuzzer_seed_corpus.zip $SRC/libpng/contrib/oss-fuzz/libpng_read_fuzzer/*
 
-find $SRC/libpng -name "*.png" | grep -v crashers | \
-     xargs zip $OUT/libpng_dotrans_alpha_seed_corpus.zip
+zip -j $OUT/libpng_dotrans_alpha_seed_corpus.zip $SRC/libpng/contrib/oss-fuzz/libpng_read_fuzzer/*
 
-find $SRC/libpng -name "*.png" | grep -v crashers | \
-     xargs zip $OUT/libpng_dotrans_rgb_seed_corpus.zip
+zip -j $OUT/libpng_dotrans_rgb_seed_corpus.zip $SRC/libpng/contrib/oss-fuzz/libpng_read_fuzzer/*
 
-find $SRC/libpng -name "*.png" | grep -v crashers | \
-     xargs zip $OUT/libpng_dotrans_setbackground_seed_corpus.zip
+zip -j $OUT/libpng_dotrans_setbackground_seed_corpus.zip $SRC/libpng/contrib/oss-fuzz/libpng_read_fuzzer/*
 
-find $SRC/libpng -name "*.png" | grep -v crashers | \
-     xargs zip $OUT/libpng_dotrans_filter_seed_corpus.zip
+zip -j $OUT/libpng_dotrans_filter_seed_corpus.zip $SRC/libpng/contrib/oss-fuzz/libpng_read_fuzzer/*
 
 
 
