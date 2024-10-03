@@ -52,14 +52,6 @@ find $SRC/libpng -name "*.png" | grep -v crashers | \
 find $SRC/libpng -name "*.png" | grep -v crashers | \
      xargs zip $OUT/libpng_dotrans_filter_seed_corpus.zip
 
-find $SRC/libpng -name "*.png" | grep -v crashers | \
-     xargs zip $OUT/libpng_setunknown_seed_corpus.zip
-
-find $SRC/libpng -name "*.png" | grep -v crashers | \
-     xargs zip $OUT/libpng_update_twice_seed_corpus.zip
-
-find $SRC/libpng -name "*.png" | grep -v crashers | \
-     xargs zip $OUT/libpng_app_error_seed_corpus.zip
 
 
 # To execute all the fuzz drivers

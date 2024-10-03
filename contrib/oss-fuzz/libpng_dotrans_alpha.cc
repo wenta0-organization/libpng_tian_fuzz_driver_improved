@@ -186,6 +186,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   png_set_scale_16(png_handler.png_ptr);
   png_set_tRNS_to_alpha(png_handler.png_ptr);
 
+  //Add new transformation 
+  png_set_alpha_mode(png_handler.png_ptr, PNG_ALPHA_BROKEN, PNG_DEFAULT_sRGB);
+
   int passes = png_set_interlace_handling(png_handler.png_ptr);
 
   png_read_update_info(png_handler.png_ptr, png_handler.info_ptr);

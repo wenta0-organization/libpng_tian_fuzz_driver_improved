@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>   // for time()
 
 #include <vector>
 
@@ -185,6 +186,14 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   png_set_packing(png_handler.png_ptr);
   png_set_scale_16(png_handler.png_ptr);
   png_set_tRNS_to_alpha(png_handler.png_ptr);
+
+  // Add new transformation
+  // Seed the random number generator
+  srand((unsigned int)time(NULL));
+  // Generate two random double values red and green in the range [0, 1)
+  double red = (double)rand() / RAND_MAX;
+  double green = (double)rand() / RAND_MAX;
+  png_set_rgb_to_gray(png_handler.png_ptr, 1, red, green); 
 
   int passes = png_set_interlace_handling(png_handler.png_ptr);
 
