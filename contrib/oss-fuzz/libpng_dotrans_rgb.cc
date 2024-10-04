@@ -17,7 +17,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>   // for time()
 
 #include <vector>
 
@@ -155,6 +154,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
 
   // Reading.
+  //png_set_keep_unknown_chunks(png_handler.png_ptr, PNG_HANDLE_CHUNK_NEVER, NULL, -1);
   png_read_info(png_handler.png_ptr, png_handler.info_ptr);
 
   // reset error handler to put png_deleter into scope.
@@ -181,11 +181,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
 
   // Set several transforms that browsers typically use:
-  png_set_gray_to_rgb(png_handler.png_ptr);
   png_set_expand(png_handler.png_ptr);
   png_set_packing(png_handler.png_ptr);
   png_set_scale_16(png_handler.png_ptr);
   png_set_tRNS_to_alpha(png_handler.png_ptr);
+
 
   // Add new transformation
   // Seed the random number generator
@@ -195,9 +195,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   double green = (double)rand() / RAND_MAX;
   png_set_rgb_to_gray(png_handler.png_ptr, 1, red, green); 
 
-  int passes = png_set_interlace_handling(png_handler.png_ptr);
 
   png_read_update_info(png_handler.png_ptr, png_handler.info_ptr);
+  
+  int passes = png_set_interlace_handling(png_handler.png_ptr);
+
 
   png_handler.row_ptr = png_malloc(
       png_handler.png_ptr, png_get_rowbytes(png_handler.png_ptr,
@@ -213,21 +215,5 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   png_read_end(png_handler.png_ptr, png_handler.end_info_ptr);
 
   PNG_CLEANUP
-
-#ifdef PNG_SIMPLIFIED_READ_SUPPORTED
-  // Simplified READ API
-  png_image image;
-  memset(&image, 0, (sizeof image));
-  image.version = PNG_IMAGE_VERSION;
-
-  if (!png_image_begin_read_from_memory(&image, data, size)) {
-    return 0;
-  }
-
-  image.format = PNG_FORMAT_RGBA;
-  std::vector<png_byte> buffer(PNG_IMAGE_SIZE(image));
-  png_image_finish_read(&image, NULL, buffer.data(), 0, NULL);
-#endif
-
   return 0;
 }

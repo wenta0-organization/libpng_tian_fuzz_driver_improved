@@ -186,12 +186,13 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   png_set_scale_16(png_handler.png_ptr);
   png_set_tRNS_to_alpha(png_handler.png_ptr);
 
-  //Add new transformation 
-  png_set_alpha_mode(png_handler.png_ptr, PNG_ALPHA_OPTIMIZED, PNG_DEFAULT_sRGB);
-
-  int passes = png_set_interlace_handling(png_handler.png_ptr);
+  // Add new transformation
+  png_set_alpha_mode(png_handler.png_ptr, PNG_ALPHA_BROKEN, PNG_DEFAULT_sRGB);
 
   png_read_update_info(png_handler.png_ptr, png_handler.info_ptr);
+  
+  int passes = png_set_interlace_handling(png_handler.png_ptr);
+
 
   png_handler.row_ptr = png_malloc(
       png_handler.png_ptr, png_get_rowbytes(png_handler.png_ptr,
@@ -207,21 +208,5 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   png_read_end(png_handler.png_ptr, png_handler.end_info_ptr);
 
   PNG_CLEANUP
-
-#ifdef PNG_SIMPLIFIED_READ_SUPPORTED
-  // Simplified READ API
-  png_image image;
-  memset(&image, 0, (sizeof image));
-  image.version = PNG_IMAGE_VERSION;
-
-  if (!png_image_begin_read_from_memory(&image, data, size)) {
-    return 0;
-  }
-
-  image.format = PNG_FORMAT_RGBA;
-  std::vector<png_byte> buffer(PNG_IMAGE_SIZE(image));
-  png_image_finish_read(&image, NULL, buffer.data(), 0, NULL);
-#endif
-
   return 0;
 }

@@ -154,6 +154,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
 
   // Reading.
+  png_set_keep_unknown_chunks(png_handler.png_ptr, PNG_HANDLE_CHUNK_NEVER, NULL, -1);
   png_read_info(png_handler.png_ptr, png_handler.info_ptr);
 
   // reset error handler to put png_deleter into scope.
@@ -186,9 +187,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   png_set_scale_16(png_handler.png_ptr);
   png_set_tRNS_to_alpha(png_handler.png_ptr);
 
+  png_read_update_info(png_handler.png_ptr, png_handler.info_ptr);
+  
   int passes = png_set_interlace_handling(png_handler.png_ptr);
 
-  png_read_update_info(png_handler.png_ptr, png_handler.info_ptr);
 
   png_handler.row_ptr = png_malloc(
       png_handler.png_ptr, png_get_rowbytes(png_handler.png_ptr,
