@@ -190,9 +190,19 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Seed the random number generator, to generate a random unsigned int
   srand((unsigned int)time(NULL));
   unsigned int filler = rand();
-
+  int mode = 0;
+  if (filler % 2 == 0) {
+    mode = PNG_FILLER_BEFORE;
+  } else {
+    mode = PNG_FILLER_AFTER;
+  }
   // Add new transformation
-  png_set_filler(png_handler.png_ptr, filler, PNG_FILLER_AFTER);
+  // this sets alpha and also filler
+  png_set_add_alpha(png_handler.png_ptr, filler, mode);
+  // png_set_filler(png_handler.png_ptr, filler, mode);
+  png_set_swap_alpha(png_handler.png_ptr);
+  png_set_invert_alpha(png_handler.png_ptr);
+
 
   png_read_update_info(png_handler.png_ptr, png_handler.info_ptr);
   
