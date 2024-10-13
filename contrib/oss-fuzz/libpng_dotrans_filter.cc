@@ -188,14 +188,13 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   png_set_tRNS_to_alpha(png_handler.png_ptr);
 
   // Seed the random number generator, to generate a random unsigned int
-  srand((unsigned int)time(NULL));
-  unsigned int filler = rand();
+  const uint8_t* tmp_buf = data;
   int mode = 0;
-  if (filler % 2 == 0) {
-    mode = PNG_FILLER_BEFORE;
-  } else {
-    mode = PNG_FILLER_AFTER;
+  if (size > 400){
+    mode = *(tmp_buf + 399) % 2;
   }
+  unsigned int filler = rand();
+
   // Add new transformation
   // this sets alpha and also filler
   png_set_add_alpha(png_handler.png_ptr, filler, mode);

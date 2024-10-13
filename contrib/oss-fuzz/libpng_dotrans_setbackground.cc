@@ -187,6 +187,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   png_set_tRNS_to_alpha(png_handler.png_ptr);
   
   png_set_strip_alpha(png_handler.png_ptr);
+  
   png_color_16 back;
   // Seed the random number generator
   srand((unsigned int)time(NULL));
@@ -198,8 +199,14 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   back.red = red;
   back.green = green;
   back.blue = blue;
+ // four background gamma code options available
+  const uint8_t* tmp_buf = data;
+  int mode = 1;
+  if (size > 400){
+    mode = *(tmp_buf + 399) % 4;
+  }
 
-  png_set_background(png_handler.png_ptr, &back, PNG_BACKGROUND_GAMMA_FILE, 1, 1.0);   
+  png_set_background(png_handler.png_ptr, &back, mode, 1, 1.0);   
 
   png_read_update_info(png_handler.png_ptr, png_handler.info_ptr);
   

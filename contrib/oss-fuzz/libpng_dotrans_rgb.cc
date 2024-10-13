@@ -181,29 +181,22 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
 
   // Set several transforms that browsers typically use:
-  png_set_expand_16(png_handler.png_ptr);
+  //png_set_expand_16(png_handler.png_ptr);
   png_set_packing(png_handler.png_ptr);
   png_set_tRNS_to_alpha(png_handler.png_ptr);
   png_set_swap(png_handler.png_ptr);
   // Add new transformation
-  // Seed the random number generator
-  srand((unsigned int)time(NULL));
-  // Generate two random double values red and green in the range [0, 1)
   
-  // randomly make red a massive value
-  int random_number = rand() % 100;
-  double red;
-  if (random_number < 99) {
-      red = (double)rand() / RAND_MAX;
-    }
-    // 1% chance (when the number is 99)
-    else {
-      red = (double)rand();
-    }
-  //double red = (double)rand() / RAND_MAX;
-  double green = (double)rand() / RAND_MAX;
-  png_set_rgb_to_gray(png_handler.png_ptr, 1, red, green); 
-
+  // Three valid mode and one invalid mode for png_set_rgb_to_gray
+  const uint8_t* tmp_buf = data;
+  int mode = 1;
+  if (size > 400){
+    mode = *(tmp_buf + 399) % 4;
+  }
+  // take some suggested value from PNG unit tests
+  double red = 6968 / 32768.;
+  double green = 23434 / 32768.;
+  png_set_rgb_to_gray(png_handler.png_ptr, mode, red, green); 
 
   png_read_update_info(png_handler.png_ptr, png_handler.info_ptr);
   

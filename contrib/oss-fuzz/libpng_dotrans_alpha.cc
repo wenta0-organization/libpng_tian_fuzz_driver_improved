@@ -42,6 +42,8 @@
     png_handler.end_info_ptr = nullptr; \
   }
 
+#define GAMMA_TYPE_MAX 4
+
 struct BufState {
   const uint8_t* data;
   size_t bytes_left;
@@ -65,6 +67,13 @@ struct PngObjectHandler {
       png_destroy_read_struct(&png_ptr, nullptr, nullptr);
     delete buf_state;
   }
+};
+
+static const double kGammaType[GAMMA_TYPE_MAX] = {
+  PNG_DEFAULT_sRGB,
+  PNG_GAMMA_MAC_18,
+  PNG_GAMMA_sRGB,
+  PNG_GAMMA_LINEAR
 };
 
 void user_read_data(png_structp png_ptr, png_bytep data, size_t length) {
@@ -186,8 +195,16 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   png_set_scale_16(png_handler.png_ptr);
   png_set_tRNS_to_alpha(png_handler.png_ptr);
 
+  const uint8_t* tmp_buf = data;
+  int mode = 1;
+  double type_output = PNG_DEFAULT_sRGB;
+  if (size > 400){
+    mode = *(tmp_buf + 199) % 4;
+    type_output = kGammaType[*(tmp_buf + 200) % GAMMA_TYPE_MAX];
+  }
+
   // Add new transformation
-  png_set_alpha_mode(png_handler.png_ptr, PNG_ALPHA_OPTIMIZED, PNG_DEFAULT_sRGB);
+  png_set_alpha_mode(png_handler.png_ptr, mode, type_output);
 
 
   png_read_update_info(png_handler.png_ptr, png_handler.info_ptr);
